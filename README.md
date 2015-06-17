@@ -1,0 +1,2 @@
+# slap
+RTM Slack bot
