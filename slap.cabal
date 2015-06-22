@@ -19,6 +19,8 @@ cabal-version:       >=1.10
 executable slap
   main-is:             Main.hs
   other-modules:       HTTP.Slap.Auth
+                    ,  Data.Slap.Types
+                    ,  Data.Aeson.Slap.Types
   -- other-extensions:    
   build-depends:       base >=4.8 && <4.9
                     ,  text
