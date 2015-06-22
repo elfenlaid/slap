@@ -1,4 +1,4 @@
-module Data.Slap (
+module Data.Slap.Types (
       Profile(..)
     , User(..)
     ) where 

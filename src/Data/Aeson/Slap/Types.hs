@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-odule Data.Aeson.Slap.Types (
+module Data.Aeson.Slap.Types (
       Profile(..)
     , User (..)
     ) where
@@ -8,6 +8,7 @@ odule Data.Aeson.Slap.Types (
 import Data.Aeson
 import Control.Applicative
 import Data.Slap.Types
+import Control.Monad 
 
 instance FromJSON Profile where
     parseJSON (Object v) = Profile <$>
@@ -17,9 +18,10 @@ instance FromJSON Profile where
                          v .:? "email"
     parseJSON _          = mzero      
 
-instance FromJson User where 
+instance FromJSON User where 
     parseJSON (Object v) = User <$>
                          v .: "id" <*>
                          v .: "name" <*>
                          v .: "deleted" <*>
                          v .: "profile"
+    parseJSON _          = mzero      
