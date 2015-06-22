@@ -25,18 +25,16 @@ executable slap
                     ,  tls
                     ,  bytestring
                     ,  connection
-                    ,  wreq
-                    ,  lens
-                    ,  lens-aeson
                     ,  aeson
+                    ,  slap
   hs-source-dirs:      src
   default-language:    Haskell2010
-  
-library
+
+library 
   exposed-modules:     HTTP.Slap.Auth
                     ,  Data.Slap.Types
                     ,  Data.Aeson.Slap.Types
-  build-depends:         base >=4.8 && <4.9
+  build-depends:       base >=4.8 && <4.9
                     ,  text
                     ,  websockets
                     ,  network
@@ -47,7 +45,7 @@ library
                     ,  lens
                     ,  lens-aeson
                     ,  aeson
-  hs-source-dirs:   src
+  hs-source-dirs:      src
   default-language:    Haskell2010
 
 
