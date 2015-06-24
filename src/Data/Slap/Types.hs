@@ -1,6 +1,7 @@
 module Data.Slap.Types (
       Profile(..)
     , User(..)
+    , Self(..)
     , ConfContext(..)
     ) where 
 
@@ -18,6 +19,11 @@ data User = User {
     , userName    :: Text
     , userDeleted :: Bool
     , userProfile :: Maybe Profile
+    } deriving (Show, Eq)
+
+data Self = Self {
+      selfId :: Text
+    , selfName :: Text
     } deriving (Show, Eq)
 
 {-
@@ -58,7 +64,6 @@ data User = User {
 
 
 data ConfContext = ConfContext {
-      confUser :: User 
+      confSelf :: Self 
     , confUsers :: [User]
-    , socketUrl :: Text
-    }
+    } deriving (Show)

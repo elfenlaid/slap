@@ -3,6 +3,7 @@
 module Data.Aeson.Slap.Types (
       Profile(..)
     , User (..)
+    , Self (..)
     , ConfContext (..)
     ) where
 
@@ -25,11 +26,16 @@ instance FromJSON User where
                          v .: "name" <*>
                          v .: "deleted" <*>
                          v .:? "profile"
-    parseJSON _          = mzero      
+    parseJSON _          = mzero  
+
+instance FromJSON Self where 
+    parseJSON (Object v) = Self <$>
+                         v .: "id" <*>
+                         v .: "name" 
+    parseJSON _          = mzero          
 
 instance FromJSON ConfContext where
     parseJSON (Object v) = ConfContext <$>
                          v .: "self" <*>
-                         v .: "users" <*>
-                         v .: "url"
+                         v .: "users"
     parseJSON _          = mzero   
