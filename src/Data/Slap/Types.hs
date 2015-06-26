@@ -2,10 +2,16 @@ module Data.Slap.Types (
       Profile(..)
     , User(..)
     , Self(..)
+    , Channel(..)
+    , IM(..)
+    , Group(..)
     , ConfContext(..)
+    , Id
     ) where 
 
 import Data.Text (Text)
+
+type Id = Text
 
 data Profile = Profile {
       profileFirstName :: Maybe Text
@@ -15,55 +21,38 @@ data Profile = Profile {
     } deriving (Show, Eq)
 
 data User = User { 
-      userId      :: Text
+      userId      :: Id
     , userName    :: Text
     , userDeleted :: Bool
     , userProfile :: Maybe Profile
     } deriving (Show, Eq)
 
 data Self = Self {
-      selfId :: Text
+      selfId :: Id
     , selfName :: Text
     } deriving (Show, Eq)
 
-{-
-{
-    "ok": true,
-    "url": "wss:\/\/ms9.slack-msgs.com\/websocket\/7I5yBpcvk",
+data Channel = Channel {
+      channelId :: Id
+    , channelName :: Text
+    , channelMembers :: Maybe [Id]
+    } deriving (Show, Eq)
 
-    "self": {
-        "id": "U023BECGF",
-        "name": "bobby",
-        "prefs": {
-            …
-        },
-        "created": 1402463766,
-        "manual_presence": "active"
-    },
-    "team": {
-        "id": "T024BE7LD",
-        "name": "Example Team",
-        "email_domain": "",
-        "domain": "example",
-        "msg_edit_window_mins": -1,
-        "over_storage_limit": false
-        "prefs": {
-            …
-        },
-        "plan": "std"
-    },
-    "users": [ … ],
+data IM = IM {
+      imId :: Id
+    , imWithUser :: Id
+    } deriving (Show, Eq)
 
-    "channels": [ … ],
-    "groups": [ … ],
-    "ims": [ … ],
-
-    "bots": [ … ],
-}
--}
-
+data Group = Group {
+      groupId :: Id
+    , groupName :: Text
+    , groupMembers :: Maybe [Id]
+    } deriving (Show, Eq)
 
 data ConfContext = ConfContext {
       confSelf :: Self 
     , confUsers :: [User]
+    , confChannels :: [Channel]
+    , confIms :: [IM]
+    , confGroups :: [Group]
     } deriving (Show)

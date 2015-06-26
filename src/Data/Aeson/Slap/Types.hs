@@ -1,10 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Data.Aeson.Slap.Types (
-      Profile(..)
-    , User (..)
-    , Self (..)
-    , ConfContext (..)
+      Profile
+    , User 
+    , Self 
+    , Channel
+    , IM
+    , Group
+    , ConfContext 
     ) where
 
 import Data.Aeson
@@ -34,8 +37,32 @@ instance FromJSON Self where
                          v .: "name" 
     parseJSON _          = mzero          
 
+instance FromJSON Channel where
+    parseJSON (Object v) = Channel <$>
+                         v .: "id" <*>
+                         v .: "name" <*>
+                         v .:? "members"
+    parseJSON _          = mzero   
+
+instance FromJSON IM where
+    parseJSON (Object v) = IM <$>
+                         v .: "id" <*>
+                         v .: "user" 
+    parseJSON _          = mzero    
+
+instance FromJSON Group where
+    parseJSON (Object v) = Group <$>
+                         v .: "id" <*>
+                         v .: "name" <*>
+                         v .:? "members"
+    parseJSON _          = mzero   
+
 instance FromJSON ConfContext where
     parseJSON (Object v) = ConfContext <$>
                          v .: "self" <*>
-                         v .: "users"
+                         v .: "users" <*>
+                         v .: "channels" <*>
+                         v .: "ims" <*>
+                         v .: "groups"
     parseJSON _          = mzero   
+
