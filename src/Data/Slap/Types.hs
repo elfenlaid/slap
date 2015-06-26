@@ -7,7 +7,7 @@ module Data.Slap.Types (
     , Group(..)
     , ConfContext(..)
     , Id
-    ) where 
+    ) where
 
 import Data.Text (Text)
 
@@ -20,7 +20,7 @@ data Profile = Profile {
     , profileEmail     :: Maybe Text
     } deriving (Show, Eq)
 
-data User = User { 
+data User = User {
       userId      :: Id
     , userName    :: Text
     , userDeleted :: Bool
@@ -28,31 +28,31 @@ data User = User {
     } deriving (Show, Eq)
 
 data Self = Self {
-      selfId :: Id
+      selfId   :: Id
     , selfName :: Text
     } deriving (Show, Eq)
 
 data Channel = Channel {
-      channelId :: Id
-    , channelName :: Text
+      channelId      :: Id
+    , channelName    :: Text
     , channelMembers :: Maybe [Id]
     } deriving (Show, Eq)
 
 data IM = IM {
-      imId :: Id
+      imId       :: Id
     , imWithUser :: Id
     } deriving (Show, Eq)
 
 data Group = Group {
-      groupId :: Id
-    , groupName :: Text
+      groupId      :: Id
+    , groupName    :: Text
     , groupMembers :: Maybe [Id]
     } deriving (Show, Eq)
 
 data ConfContext = ConfContext {
-      confSelf :: Self 
-    , confUsers :: [User]
+      confSelf     :: Self
+    , confUsers    :: [User]
     , confChannels :: [Channel]
-    , confIms :: [IM]
-    , confGroups :: [Group]
+    , confIms      :: [IM]
+    , confGroups   :: [Group]
     } deriving (Show)

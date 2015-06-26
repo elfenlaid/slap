@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module HTTP.Slap.Auth where 
+module Network.HTTP.Slap.Auth where 
 
 import Network.Wreq
 import Control.Lens
