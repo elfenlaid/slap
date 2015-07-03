@@ -6,6 +6,7 @@ module Data.Slap.Types (
     , IM(..)
     , Group(..)
     , ConfContext(..)
+    , Error(..)
     , Id
     ) where
 
@@ -55,4 +56,9 @@ data ConfContext = ConfContext {
     , confChannels :: [Channel]
     , confIms      :: [IM]
     , confGroups   :: [Group]
+    } deriving (Show)
+
+data Error = Error {
+      errorCode :: Integer
+    , errorMsg :: Text
     } deriving (Show)
