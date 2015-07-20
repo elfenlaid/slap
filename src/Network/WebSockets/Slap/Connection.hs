@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ViewPatterns      #-}
 {-# LANGUAGE RecordWildCards   #-}
 
 module Network.WebSockets.Slap.Connection (
@@ -8,28 +7,26 @@ module Network.WebSockets.Slap.Connection (
     , receiveData
     , sendData
     , close
-    )where
+    , parseUrlCreds
+    ) where
 
 
 import           Control.Concurrent        (forkIO)
 import           Control.Monad             (forever)
 import           Data.Word                 (Word16)
 
-import qualified Data.ByteString.Lazy      as BL
-
 import           Network                   (PortNumber (..))
 import           Network.Connection        (ConnectionParams (..),
                                             TLSSettings (..))
 import qualified Network.Connection        as Con
 import qualified Network.URI               as URI
-
-
 import qualified Network.WebSockets        as WS
 import qualified Network.WebSockets.Stream as WS
 
 import           Data.Text                 (Text)
 import qualified Data.Text                 as T
 import qualified Data.Text.IO              as T
+import qualified Data.ByteString.Lazy      as BL
 
 import           Control.Concurrent.Chan   (Chan, newChan, readChan, writeChan)
 
@@ -62,10 +59,6 @@ parseUrlCreds url = do
         getPath "" = "/"
         getPath p  = p
 
-connectTo :: WebSocketUrl -> IO (Either Error Connection)
-connectTo (parseUrlCreds -> Just creds) = fmap Right (connect creds)
-connectTo _ = return $ Left "Invalid websocket url"
-
 close :: Connection -> IO ()
 close con = WS.sendClose (connection con) ("Bye!" :: Text)
 
@@ -75,8 +68,8 @@ sendData Connection{..} = writeChan conOutput
 receiveData :: Connection -> IO Text
 receiveData Connection{..} = readChan conInput
 
-connect :: UrlCreds -> IO Connection
-connect creds = do
+connectTo :: UrlCreds -> IO Connection
+connectTo creds = do
     ctx <- Con.initConnectionContext
     con <- Con.connectTo ctx params
     let reader = (fmap Just $ Con.connectionGetChunk con)

@@ -1,39 +1,49 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Network.HTTP.Slap.Auth where
+module Network.HTTP.Slap.Auth (
+      getStartResponse
+    , getRawStartResponse
+    , StartResponse(..)
+    ) where
 
 import Network.Wreq
 import Control.Lens
 import Data.Aeson.Lens
 import Data.Aeson
 import Data.Text (Text)
+import Control.Monad (mzero)
+import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import qualified Data.ByteString.Lazy as LBS
-
 import qualified Data.Aeson.Slap.Types as Types
 
-type Url = String
-type Error = String
-type Token = String
-data RTMResponse = RTMResponse Url (Maybe Types.ConfContext)
+type Url = Text
+type Error = Text
+type Token = Text
+
+instance FromJSON StartResponse where
+    parseJSON v | (Just err) <- v ^? key "error" . _String = pure (StartError err)
+                | (Object o) <- v = StartResponse <$> (parseJSON v) <*> o .: "url"
+                | otherwise = mzero
+
+data StartResponse = StartResponse {
+      startContext :: Types.ConfContext
+    , startURL     :: Url }
+    | StartError {
+      startError   :: Error }
     deriving Show
 
 rtmStartUrl :: Url
 rtmStartUrl = "https://slack.com/api/rtm.start"
 
-getRTMStartRaw :: Token -> IO LBS.ByteString
-getRTMStartRaw token = do
-    r <- getWith opts rtmStartUrl
+getRawStartResponse :: Token -> IO LBS.ByteString
+getRawStartResponse token = do
+    r <- getWith opts (T.unpack rtmStartUrl)
     return $ r ^. responseBody
-  where opts = defaults & param "token" .~ [T.pack token]
+  where opts = defaults & param "token" .~ [token]
 
-getRTMStart :: Token -> IO (Either Error RTMResponse)
-getRTMStart token = do
-    r <- getRTMStartRaw token
-    case decode r :: Maybe Value of
-        Just v  -> return (composeResponse r v)
-        Nothing -> return (Left "failed to parse json")
-  where composeResponse s v
-            | (Just url) <- v ^? key "url" . _String   = Right (RTMResponse (T.unpack url) (decode s))
-            | (Just err) <- v ^? key "error" . _String = Left (T.unpack err)
-            | otherwise = Left "uknown error"
+getStartResponse :: Token -> IO StartResponse
+getStartResponse token = do
+    response <- getRawStartResponse token
+    return $ fromMaybe (error "Failed to decode response")
+                       (decode response)

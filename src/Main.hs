@@ -1,29 +1,26 @@
 {-# LANGUAGE RecordWildCards   #-}
+{-# LANGUAGE ViewPatterns #-}
 
 import Data.Slap.Config
 import Network.HTTP.Slap.Auth
 import Network.WebSockets.Slap.Connection
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
-import Control.Monad
+import Control.Monad (forever)
 
 main :: IO ()
 main = do
     config <- mkConfigFromFile "bot.conf"
-    case config of
-      (Just cfg) -> startBot cfg
-      Nothing -> error "provide config file"
+    maybe (error "provide config file") startBot config
 
 startBot :: Config -> IO ()
 startBot Config{..} = do
-    resp <- getRTMStart (T.unpack configToken)
+    resp <- getStartResponse configToken
     case resp of
-      (Right (RTMResponse url _)) -> listen url
-      (Left err) -> error err
-  where listen url = do
-          con <- connectTo url
-          case con of
-            (Left err) -> error err
-            (Right con) -> forever $ do
-                            txt <- receiveData con
-                            T.putStrLn txt
+      StartResponse {startURL = url} -> connect (T.unpack url)
+      StartError {startError = err}  -> error (T.unpack err)
+  where connect (parseUrlCreds -> Just creds) = connectTo creds >>= listen
+        connect url = error $ "Failed to create creds for url " ++ url
+        listen con = forever $ do
+                        txt <- receiveData con
+                        T.putStrLn txt
